@@ -32,7 +32,7 @@ def plot_agregacao(
 
             # Adiciona valores ao lado das barras
             for i, v in enumerate(dados):
-                ax.text(v + 1, i, str(v), color="black", va="center")
+                ax.text(v + max(dados) * 0.01, i, str(v), color="black", va="center")
         else:
             # Gráfico de barras vertical
             cores = cm.tab20(np.linspace(0, 1, len(dados)))

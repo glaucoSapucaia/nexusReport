@@ -2,25 +2,28 @@ from matplotlib.backends.backend_pdf import PdfPages
 from charts import plot_agregacao
 from core import resultados_protocolos
 import matplotlib.pyplot as plt
-import numpy as np
+
 
 # Cria o PDF
-with PdfPages("relatorio_protocolos.pdf") as pdf:
-
+def gerar_graficos_protocolos(pdf=None):
     # --- Tipo ---
     plt.figure(figsize=(12, 8))
     plot_agregacao(
         resultados_protocolos["tipo"], titulo="Distribuição por Tipo", show=False
     )
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
     # --- Status ---
     plt.figure(figsize=(12, 8))
     plot_agregacao(
-        resultados_protocolos["status"], titulo="Distribuição por Status", show=False
+        resultados_protocolos["status"],
+        titulo="Distribuição por Status",
+        show=False,
     )
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
     # --- Regional ---
@@ -30,7 +33,8 @@ with PdfPages("relatorio_protocolos.pdf") as pdf:
         titulo="Distribuição por Regional",
         show=False,
     )
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
     # --- Grupo ---
@@ -38,7 +42,8 @@ with PdfPages("relatorio_protocolos.pdf") as pdf:
     plot_agregacao(
         resultados_protocolos["grupo"], titulo="Distribuição por Grupo", show=False
     )
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
     # --- Número de Vistorias ---
@@ -47,7 +52,8 @@ with PdfPages("relatorio_protocolos.pdf") as pdf:
 
     plt.figure(figsize=(12, 8))
     plot_agregacao(vistorias, titulo="Distribuição por Número de Vistorias", show=False)
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
     # --- Pontuação de Resolução ---
@@ -58,7 +64,8 @@ with PdfPages("relatorio_protocolos.pdf") as pdf:
     plot_agregacao(
         pontuacao, titulo="Distribuição por Pontuação de Resolução", show=False
     )
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
     # --- Tempo de Serviço ---
@@ -67,7 +74,8 @@ with PdfPages("relatorio_protocolos.pdf") as pdf:
 
     plt.figure(figsize=(12, 8))
     plot_agregacao(tempo, titulo="Distribuição por Tempo de Serviço", show=False)
-    pdf.savefig()
+    if pdf:
+        pdf.savefig()
     plt.close()
 
-print("PDF gerado com sucesso: relatorio_protocolos.pdf")
+    print("PDF gerado com sucesso: graficos_protocolos.pdf")
