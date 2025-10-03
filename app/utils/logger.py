@@ -7,7 +7,7 @@ logger.setLevel(logging.INFO)
 # Evita duplicar handlers se este módulo for importado várias vezes
 if not logger.handlers:
     # Handler de arquivo
-    file_handler = logging.FileHandler("app_log.txt", encoding="utf-8")
+    file_handler = logging.FileHandler("app_log.txt", mode="w", encoding="utf-8")
     file_handler.setLevel(logging.INFO)
 
     # Formato do log

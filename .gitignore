@@ -1,6 +1,6 @@
 *.sql
 *.pdf
-*.txt
+*log.txt
 venv/
 .env
 __pycache__
