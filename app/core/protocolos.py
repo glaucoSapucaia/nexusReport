@@ -1,29 +1,37 @@
 from .analyzer import DBAnalyzer
+from utils import logger
 
-analisador = DBAnalyzer()
+logger.info("Iniciando pipeline de protocolos.")
 
-# Carrega apenas a tabela de protocolos
-dfs = analisador.carregar_tabelas(["protocolos_gmcat_tb"])
+try:
+    analisador = DBAnalyzer()
 
-# Filtra último trimestre
-df_trimestre = analisador.filtrar_periodo(
-    "protocolos_gmcat_tb", "data_cadastro_gerencia"
-)
+    # Carrega apenas a tabela de protocolos
+    logger.info("Carregando tabela 'protocolos_gmcat_tb'")
+    dfs = analisador.carregar_tabelas(["protocolos_gmcat_tb"])
 
-# Agregações desejadas
-colunas_agregacao = [
-    "tipo",
-    "status",
-    "regional",
-    "grupo",
-    "numero_de_vistorias",
-    "pontuacao_resolucao",
-    "tempo_servico",
-]
+    # Filtra periodo
+    logger.info("Aplicando filtro de período.")
+    df_periodo = analisador.filtrar_periodo(
+        "protocolos_gmcat_tb", "data_cadastro_gerencia"
+    )
+    logger.info(f"Após filtro: {len(df_periodo)} registros restantes.")
 
-resultados = analisador.agregacoes(df_trimestre, colunas_agregacao)
+    # Agregações desejadas
+    colunas_agregacao = [
+        "tipo",
+        "status",
+        "regional",
+        "grupo",
+        "numero_de_vistorias",
+        "pontuacao_resolucao",
+        "tempo_servico",
+    ]
+    logger.info(f"Realizando agregações para colunas: {colunas_agregacao}")
+    resultados = analisador.agregacoes(df_periodo, colunas_agregacao)
 
-# Mostra resultados
-for coluna, resumo in resultados.items():
-    print(f"\nAgregação por {coluna}:")
-    print(resumo)
+    logger.info("Pipeline de análise de protocolos concluído com sucesso.")
+
+except Exception as e:
+    logger.error(f"Erro no pipeline de análise de protocolos: {e}", exc_info=True)
+    raise

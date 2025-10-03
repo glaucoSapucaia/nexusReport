@@ -1,22 +1,27 @@
 from .analyzer import DBAnalyzer
+from utils import logger
 
-analisador = DBAnalyzer()
+logger.info("Iniciando pipeline de rotas.")
 
-# Carrega apenas a tabela de protocolos
-dfs = analisador.carregar_tabelas(["rotas_tb"])
+try:
+    analisador = DBAnalyzer()
 
-# Filtra último trimestre
-df_trimestre = analisador.filtrar_periodo("rotas_tb", "data_geracao")
+    # Carrega apenas a tabela de rotas
+    logger.info("Carregando tabela 'rotas_tb'")
+    dfs = analisador.carregar_tabelas(["rotas_tb"])
 
-# Agregações desejadas
-colunas_agregacao = [
-    "grupo",
-    "status",
-]
+    # Filtra periodo
+    logger.info("Aplicando filtro de período.")
+    df_periodo = analisador.filtrar_periodo("rotas_tb", "data_geracao")
+    logger.info(f"Após filtro: {len(df_periodo)} registros restantes.")
 
-resultados = analisador.agregacoes(df_trimestre, colunas_agregacao)
+    # Agregações desejadas
+    colunas_agregacao = ["grupo", "status"]
+    logger.info(f"Realizando agregações para colunas: {colunas_agregacao}")
+    resultados = analisador.agregacoes(df_periodo, colunas_agregacao)
 
-# Mostra resultados
-for coluna, resumo in resultados.items():
-    print(f"\nAgregação por {coluna}:")
-    print(resumo)
+    logger.info("Pipeline de análise de rotas concluído com sucesso.")
+
+except Exception as e:
+    logger.error(f"Erro no pipeline de análise de rotas: {e}", exc_info=True)
+    raise
