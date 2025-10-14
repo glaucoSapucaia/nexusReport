@@ -20,7 +20,6 @@ def gerar_graficos_rotas(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Grupo' salvo no PDF.")
         plt.close()
 
         # --- Status ---
@@ -33,7 +32,6 @@ def gerar_graficos_rotas(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Status' salvo no PDF.")
         plt.close()
 
         logger.info("Finalizada a geração dos gráficos de rotas.")

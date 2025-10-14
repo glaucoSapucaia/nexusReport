@@ -13,7 +13,6 @@ try:
     # Filtra periodo
     logger.info("Aplicando filtro de período.")
     df_periodo = analisador.filtrar_periodo("rotas_tb", "data_geracao")
-    logger.info(f"Após filtro: {len(df_periodo)} registros restantes.")
 
     # Agregações desejadas
     colunas_agregacao = ["grupo", "status"]

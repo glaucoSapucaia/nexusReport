@@ -1,5 +1,5 @@
 from charts.aggregration import plot_agregacao
-from core import resultados_protocolos
+from core import resultados_protocolos, resultados_grupo_tempo_servico
 from utils import logger
 
 import matplotlib.pyplot as plt
@@ -29,7 +29,6 @@ def gerar_graficos_protocolos(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Tipo' salvo no PDF.")
         plt.close()
 
         # --- Status ---
@@ -42,7 +41,6 @@ def gerar_graficos_protocolos(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Status' salvo no PDF.")
         plt.close()
 
         # --- Regional ---
@@ -55,7 +53,6 @@ def gerar_graficos_protocolos(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Regional' salvo no PDF.")
         plt.close()
 
         # --- Grupo ---
@@ -66,7 +63,6 @@ def gerar_graficos_protocolos(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Grupo' salvo no PDF.")
         plt.close()
 
         # --- Número de Vistorias ---
@@ -78,7 +74,6 @@ def gerar_graficos_protocolos(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Número de Vistorias' salvo no PDF.")
         plt.close()
 
         # --- Pontuação de Resolução ---
@@ -90,7 +85,6 @@ def gerar_graficos_protocolos(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Pontuação de Resolução' salvo no PDF.")
         plt.close()
 
         # --- Tempo de Serviço ---
@@ -100,7 +94,20 @@ def gerar_graficos_protocolos(pdf=None):
         plot_agregacao(tempo, titulo="Distribuição por Tempo de Serviço", show=False)
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Tempo de Serviço' salvo no PDF.")
+        plt.close()
+
+        # --- Tempo de Serviço por Grupo ---
+        logger.info("Gerando gráfico: Tempo de Serviço Total por Grupo")
+        plt.figure(figsize=(12, 8))
+
+        # resultados_grupo_tempo_servico deve ser um pd.Series ou dict com {grupo: tempo_total}
+        plot_agregacao(
+            resultados_grupo_tempo_servico,
+            titulo="Tempo de Serviço Total por Grupo",
+            show=False,
+        )
+        if pdf:
+            pdf.savefig()
         plt.close()
 
         logger.info("Finalizada a geração dos gráficos de protocolos.")

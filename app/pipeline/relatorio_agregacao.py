@@ -41,7 +41,6 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
     try:
         # Define a localidade para pt_BR
         locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
-        logger.debug("Localidade configurada para pt_BR.")
 
         # Normaliza data_inicio
         if isinstance(data_inicio, str):
@@ -55,8 +54,8 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
 
         mes = dt_inicio.strftime("%B")
         ano = dt_inicio.strftime("%Y")
-        RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_{mes}_de_{ano}.pdf"
-        logger.info(f"Arquivo de saída definido: {RELATORIO_FILENAME}")
+        # RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_{mes}_de_{ano}.pdf"
+        RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_todo_o_periodo.pdf"
 
         with PdfPages(RELATORIO_FILENAME) as pdf:
             logger.debug("Criando página de título.")
@@ -75,7 +74,8 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
             plt.text(
                 0.5,
                 0.4,
-                f"{mes} de {ano}",
+                # f"{mes} de {ano}",
+                f"Todo o período",
                 ha="center",
                 va="center",
                 fontsize=16,

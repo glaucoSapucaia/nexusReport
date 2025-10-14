@@ -22,7 +22,6 @@ def gerar_graficos_vistoriados(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Resultado' salvo no PDF.")
         plt.close()
 
         # --- Responsável ---
@@ -35,7 +34,6 @@ def gerar_graficos_vistoriados(pdf=None):
         )
         if pdf:
             pdf.savefig()
-            logger.debug("Gráfico 'Responsável' salvo no PDF.")
         plt.close()
 
         logger.info("Finalizada a geração dos gráficos de vistoria.")

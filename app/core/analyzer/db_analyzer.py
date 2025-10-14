@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 from utils import logger
 
-data_inicio = "2025-09-01"
-data_fim = "2025-09-30"
+data_inicio = "2025-01-01"
+data_fim = "2025-12-01"
 
 
 class DBAnalyzer:
@@ -37,15 +37,11 @@ class DBAnalyzer:
 
     def carregar_tabelas(self, tabelas):
         """Carrega tabelas do banco para DataFrames"""
-        logger.info(f"Carregando tabelas: {tabelas}")
         for tabela in tabelas:
             try:
                 if tabela in self.inspector.get_table_names(schema="public"):
                     self.dfs[tabela] = pd.read_sql_table(
                         tabela, self.engine, schema="public"
-                    )
-                    logger.info(
-                        f"Tabela '{tabela}' carregada com {len(self.dfs[tabela])} linhas"
                     )
                 else:
                     logger.warning(f"Tabela '{tabela}' não encontrada no banco")
@@ -58,10 +54,6 @@ class DBAnalyzer:
         """
         Filtra registros de uma tabela entre uma data inicial e final.
         """
-        logger.info(
-            f"Filtrando registros da tabela '{tabela}' pelo período {self.data_inicio} até {self.data_fim}"
-        )
-
         df = self.dfs.get(tabela)
         if df is None:
             logger.error(f"Tabela '{tabela}' não carregada.")
@@ -82,7 +74,6 @@ class DBAnalyzer:
         if self.data_fim is not None:
             df = df[df[coluna_data] <= self.data_fim]
 
-        logger.info(f"Filtro aplicado. {len(df)} registros restantes.")
         return df
 
     def agregacoes(self, df, colunas, top_n=None):
@@ -90,7 +81,6 @@ class DBAnalyzer:
         Realiza agregações simples (value_counts) para várias colunas,
         remove NaN e converte valores para int.
         """
-        logger.info(f"Iniciando agregações para colunas: {colunas}, top_n={top_n}")
         resultados = {}
 
         for coluna in colunas:
@@ -113,13 +103,53 @@ class DBAnalyzer:
                     vc.index = vc.index.astype(int)
 
                 resultados[coluna] = vc
-                logger.debug(
-                    f"Agregação concluída para coluna '{coluna}': {len(vc)} categorias"
-                )
 
             except Exception as e:
                 logger.error(f"Erro ao agregar coluna {coluna}: {e}", exc_info=True)
                 raise
-
-        logger.info("Agregações concluídas com sucesso.")
         return resultados
+
+    def agregacao_soma_por_grupo(self, df, coluna_agregar, coluna_somar):
+        """
+        Agrega dados por uma coluna e soma os valores de outra coluna, retornando inteiros.
+
+        Parâmetros:
+            df (pd.DataFrame): DataFrame com os dados.
+            coluna_agregar (str): Coluna que será usada para agrupar (ex: 'grupo').
+            coluna_somar (str): Coluna que será somada (ex: 'tempo_servico').
+
+        Retorna:
+            pd.Series: Série com a soma do tempo de serviço por grupo (tipo int).
+        """
+
+        if coluna_agregar not in df.columns or coluna_somar not in df.columns:
+            logger.error(
+                f"Colunas '{coluna_agregar}' ou '{coluna_somar}' não encontradas no DataFrame"
+            )
+            raise ValueError(
+                f"Colunas '{coluna_agregar}' ou '{coluna_somar}' não encontradas no DataFrame"
+            )
+
+        try:
+            # Normaliza coluna de agrupamento se for string
+            if pd.api.types.is_string_dtype(df[coluna_agregar]):
+                df[coluna_agregar] = df[coluna_agregar].str.title().str.strip()
+
+            # Garante que a coluna a somar seja numérica, substituindo NaNs por 0
+            df[coluna_somar] = pd.to_numeric(df[coluna_somar], errors="coerce").fillna(
+                0
+            )
+
+            # Agrupa e soma
+            resultados = (
+                df.groupby(coluna_agregar)[coluna_somar]
+                .sum()
+                .astype(int)  # força para inteiro
+                .sort_values(ascending=False)
+            )
+
+            return resultados
+
+        except Exception as e:
+            logger.error(f"Erro ao agregar e somar por grupo: {e}", exc_info=True)
+            raise

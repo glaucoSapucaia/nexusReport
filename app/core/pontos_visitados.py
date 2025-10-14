@@ -13,7 +13,6 @@ try:
     # Filtra periodo
     logger.info("Aplicando filtro de período.")
     df_periodo = analisador.filtrar_periodo("pontos_visitados_tb", "data_registro")
-    logger.info(f"Após filtro: {len(df_periodo)} registros restantes.")
 
     # Agregações desejadas
     colunas_agregacao = ["resultado", "responsavel"]

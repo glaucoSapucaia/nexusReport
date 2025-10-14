@@ -5,7 +5,6 @@ if __name__ == "__main__":
     logger.info("Iniciando execução do programa.")
 
     try:
-        logger.info("Chamando função principal: gerar_relatorio_agregacao()")
         gerar_relatorio_agregacao()
         logger.info("Execução concluída com sucesso.")
 

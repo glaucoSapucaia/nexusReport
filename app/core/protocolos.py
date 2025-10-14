@@ -15,7 +15,6 @@ try:
     df_periodo = analisador.filtrar_periodo(
         "protocolos_gmcat_tb", "data_cadastro_gerencia"
     )
-    logger.info(f"Após filtro: {len(df_periodo)} registros restantes.")
 
     # Agregações desejadas
     colunas_agregacao = [
@@ -29,6 +28,10 @@ try:
     ]
     logger.info(f"Realizando agregações para colunas: {colunas_agregacao}")
     resultados = analisador.agregacoes(df_periodo, colunas_agregacao)
+
+    resultados_grupo_tempo_servico = analisador.agregacao_soma_por_grupo(
+        df_periodo, "grupo", "tempo_servico"
+    )
 
     logger.info("Pipeline de análise de protocolos concluído com sucesso.")
 
