@@ -3,13 +3,16 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect
 from utils import logger
+from pathlib import Path
+
+ENV_DIR = Path(__file__).resolve().parent.parent.parent.parent / ".env"
 
 data_inicio = "2025-01-01"
-data_fim = "2025-12-01"
+data_fim = "2026-12-31"
 
 
 class DBAnalyzer:
-    def __init__(self, env_path=".env"):
+    def __init__(self, env_path=ENV_DIR):
         logger.info("Inicializando DBAnalyzer...")
         load_dotenv(env_path)
 
