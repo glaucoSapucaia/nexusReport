@@ -3,6 +3,7 @@ from charts.aggregration import (
     gerar_graficos_rotas,
     gerar_graficos_vistoriados,
 )
+from charts.word_cloud import gerar_word_cloud
 from core.analyzer import data_inicio
 from utils import logger
 
@@ -102,6 +103,10 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
             pdf.savefig()
             plt.close()
             gerar_graficos_protocolos(pdf=pdf)
+
+            # Word cloud - Reclamações
+            logger.info("Gerando seção: Nuvem de Palavras - Reclamações")
+            gerar_word_cloud(pdf=pdf)
 
             # Rotas
             logger.info("Gerando seção: Rotas")

@@ -1,5 +1,5 @@
 from .analyzer import DBAnalyzer
-from utils import logger
+from utils import logger, limpar_texto
 
 logger.info("Iniciando pipeline de protocolos.")
 
@@ -48,6 +48,12 @@ try:
         {True: "Com Reclamação", False: "Sem Reclamação"}
     )
     resultado_reclamacao = df_tempestivo["tem_reclamacao"].value_counts()
+
+    # Limpando texto das reclamações
+    df_tempestivo["reclamacao_clean"] = df_tempestivo["reclamacao"].apply(limpar_texto)
+
+    # Junta todas as reclamações em um único texto
+    texto_total = " ".join(df_tempestivo["reclamacao_clean"].dropna())
 
     logger.info("Pipeline de análise de protocolos concluído com sucesso.")
 
