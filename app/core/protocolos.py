@@ -40,6 +40,15 @@ try:
     df_tempestivo = analisador.filtrar_tempestividade(df_periodo)
     resultados_tempestivo_intempestivo = analisador.agregacoes(df_tempestivo, ["tipo"])
 
+    # Analisando campo reclamação
+    df_tempestivo["tem_reclamacao"] = df_tempestivo["reclamacao"].notna() & (
+        df_tempestivo["reclamacao"].astype(str).str.strip() != ""
+    )
+    df_tempestivo["tem_reclamacao"] = df_tempestivo["tem_reclamacao"].map(
+        {True: "Com Reclamação", False: "Sem Reclamação"}
+    )
+    resultado_reclamacao = df_tempestivo["tem_reclamacao"].value_counts()
+
     logger.info("Pipeline de análise de protocolos concluído com sucesso.")
 
 except Exception as e:

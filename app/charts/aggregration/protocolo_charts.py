@@ -1,8 +1,10 @@
+import re
 from charts.aggregration import plot_agregacao
 from core import (
     resultados_protocolos,
     resultados_grupo_tempo_servico,
     resultados_tempestivo_intempestivo,
+    resultado_reclamacao,
 )
 from utils import logger
 
@@ -41,6 +43,18 @@ def gerar_graficos_protocolos(pdf=None):
         plot_agregacao(
             resultados_tempestivo_intempestivo["tipo"],
             titulo="Distribuição por Tempestividade",
+            show=False,
+        )
+        if pdf:
+            pdf.savefig()
+        plt.close()
+
+        # --- Reclamação ---
+        logger.info("Gerando gráfico: Distribuição por Reclamação")
+        plt.figure(figsize=(12, 8))
+        plot_agregacao(
+            resultado_reclamacao,
+            titulo="Distribuição por Reclamação",
             show=False,
         )
         if pdf:
