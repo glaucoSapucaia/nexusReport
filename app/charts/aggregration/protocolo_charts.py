@@ -1,5 +1,9 @@
 from charts.aggregration import plot_agregacao
-from core import resultados_protocolos, resultados_grupo_tempo_servico
+from core import (
+    resultados_protocolos,
+    resultados_grupo_tempo_servico,
+    resultados_tempestivo_intempestivo,
+)
 from utils import logger
 
 import matplotlib.pyplot as plt
@@ -26,6 +30,18 @@ def gerar_graficos_protocolos(pdf=None):
         plt.figure(figsize=(12, 8))
         plot_agregacao(
             resultados_protocolos["tipo"], titulo="Distribuição por Tipo", show=False
+        )
+        if pdf:
+            pdf.savefig()
+        plt.close()
+
+        # --- Tipo Tempestivo/Intempestivo ---
+        logger.info("Gerando gráfico: Distribuição por Tempestividade")
+        plt.figure(figsize=(12, 8))
+        plot_agregacao(
+            resultados_tempestivo_intempestivo["tipo"],
+            titulo="Distribuição por Tempestividade",
+            show=False,
         )
         if pdf:
             pdf.savefig()

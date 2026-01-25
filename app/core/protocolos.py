@@ -27,11 +27,18 @@ try:
         "tempo_servico",
     ]
     logger.info(f"Realizando agregações para colunas: {colunas_agregacao}")
+
+    # Resultados gerais
     resultados = analisador.agregacoes(df_periodo, colunas_agregacao)
 
+    # Tempo de serviço por grupo
     resultados_grupo_tempo_servico = analisador.agregacao_soma_por_grupo(
         df_periodo, "grupo", "tempo_servico"
     )
+
+    # Isolamento de protocolos tempestivos e intempestivos
+    df_tempestivo = analisador.filtrar_tempestividade(df_periodo)
+    resultados_tempestivo_intempestivo = analisador.agregacoes(df_tempestivo, ["tipo"])
 
     logger.info("Pipeline de análise de protocolos concluído com sucesso.")
 

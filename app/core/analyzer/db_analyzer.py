@@ -156,3 +156,9 @@ class DBAnalyzer:
         except Exception as e:
             logger.error(f"Erro ao agregar e somar por grupo: {e}", exc_info=True)
             raise
+
+    def filtrar_tempestividade(self, df):
+        df = df.copy()
+        df["tipo"] = df["tipo"].astype(str).str.lower().str.strip()
+
+        return df[df["tipo"].str.contains(r"tempestiv", na=False)]
