@@ -136,6 +136,31 @@ def gerar_graficos_insights(pdf=None):
             # Chamada da função auxiliar (sem o parâmetro fig)
             _configurar_e_salvar("Concentração Geográfica de Protocolos", pdf)
 
+            # 7. Pontuação (Prioridade vs Resolução)
+        logger.info("Gerando gráfico: Pontuação de Prioridade vs Resolução")
+        # Removemos nulos para evitar que o gráfico fique em branco ou dê erro
+        df_scores = df.dropna(subset=['pontuacao_prioridade', 'pontuacao_resolucao'])
+        
+        if not df_scores.empty:
+            plt.figure(figsize=(12, 8))
+            
+            # Criando o scatter plot
+            plt.scatter(
+                df_scores['pontuacao_prioridade'], 
+                df_scores['pontuacao_resolucao'], 
+                alpha=0.5, 
+                color='orange',
+                edgecolors='k' # Adiciona uma borda preta fina nos pontos para melhor visibilidade
+            )
+            
+            # Legendas essenciais para análise
+            plt.xlabel("Pontuação de Prioridade (Planejado)")
+            plt.ylabel("Pontuação de Resolução (Executado)")
+            plt.grid(True, linestyle=':', alpha=0.6)
+            
+            # Chamada correta da função (sem o parâmetro fig)
+            _configurar_e_salvar("Correlação: Prioridade Planejada vs Pontuação de Resolução", pdf)
+
 
 
 
