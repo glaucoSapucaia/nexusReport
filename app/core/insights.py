@@ -17,6 +17,7 @@ try:
         df_insights[coluna_fim] = pd.to_datetime(df_insights[coluna_fim]).dt.tz_localize(None)
         df_insights["tempo_resolucao"] = (df_insights[coluna_fim] - df_insights[coluna_inicio]).dt.days
         df_insights = df_insights.dropna(subset=["tempo_resolucao"])
+        df_insights['tamanho_reclamacao'] = df_insights['reclamacao'].str.len().fillna(0)
         
         # Criamos o objeto que o seu __init__.py está tentando importar
         resultados_insights = {"df": df_insights}
