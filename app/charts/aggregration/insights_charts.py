@@ -88,6 +88,32 @@ def gerar_graficos_insights(pdf=None):
         plt.xticks(rotation=45)
         _configurar_e_salvar("Volume de Protocolos ao Longo do Tempo", pdf)
 
+       # 5. Boxplot por Tipo
+        logger.info("Gerando gráfico: Tempo de Resolução por Tipo")
+        # Filtrando nulos para garantir que o gráfico seja gerado corretamente
+        df_tipo = df.dropna(subset=['tipo', 'tempo_resolucao'])
+        
+        if not df_tipo.empty:
+            plt.figure(figsize=(12, 10)) 
+            ax = plt.gca()
+            
+            df_tipo.boxplot(
+                column='tempo_resolucao', 
+                by='tipo', 
+                vert=False, 
+                patch_artist=True, 
+                ax=ax
+            )
+            
+            plt.xlabel("Dias para Resolução")
+            plt.ylabel("Tipo de Protocolo")
+            
+            
+            plt.suptitle("") 
+            
+            _configurar_e_salvar("Tempo de Resolução por Tipo", pdf)
+
+
 
 
 
