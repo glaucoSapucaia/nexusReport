@@ -8,6 +8,7 @@ def _configurar_e_salvar(titulo, pdf):
     Função auxiliar para aplicar título, ajustar layout e salvar no PDF.
     """
     plt.title(titulo)
+    plt.suptitle("")
     plt.tight_layout()
     if pdf:
         pdf.savefig()
@@ -52,6 +53,30 @@ def gerar_graficos_insights(pdf=None):
         
         plt.xlabel("Dias para Resolução")
         _configurar_e_salvar("Tempo médio de resolução (Análise de Outliers)", pdf)
+
+    # 3. Prioridade vs Tempo 
+        if 'prioridade' in df.columns:
+            df_prio = df.dropna(subset=['prioridade', 'tempo_resolucao'])
+            if not df_prio.empty:
+                logger.info("Gerando gráfico: Prioridade vs Tempo Real")
+                
+                plt.figure(figsize=(12, 8))
+                ax = plt.gca() # Pega o eixo atual
+                
+                df_prio.boxplot(
+                    column='tempo_resolucao', 
+                    by='prioridade', 
+                    vert=False, 
+                    patch_artist=True, 
+                    ax=ax
+                )
+                
+                plt.xlabel("Dias para Resolução")
+                plt.ylabel("Prioridade")
+                
+                # Chamada da função auxiliar
+                _configurar_e_salvar("Prioridade Declarada vs Tempo Real", pdf)
+
 
 
         logger.info("Finalizada a geração dos gráficos de insights.")
