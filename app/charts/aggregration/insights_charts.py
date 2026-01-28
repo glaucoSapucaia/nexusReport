@@ -161,7 +161,31 @@ def gerar_graficos_insights(pdf=None):
             # Chamada correta da função (sem o parâmetro fig)
             _configurar_e_salvar("Correlação: Prioridade Planejada vs Pontuação de Resolução", pdf)
 
-
+            # 8. Tamanho da Reclamação vs Tempo
+        # Agora que calculamos no core, esta condição será verdadeira
+        if 'tamanho_reclamacao' in df.columns:
+            logger.info("Gerando gráfico: Tamanho da Reclamação vs Tempo")
+            
+            # Removemos nulos para garantir a dispersão correta
+            df_rec = df.dropna(subset=['tamanho_reclamacao', 'tempo_resolucao'])
+            
+            if not df_rec.empty:
+                plt.figure(figsize=(12, 8))
+                
+                plt.scatter(
+                    df_rec['tamanho_reclamacao'], 
+                    df_rec['tempo_resolucao'], 
+                    alpha=0.5, 
+                    color='purple',
+                    edgecolors='w'
+                )
+                
+                plt.xlabel("Tamanho da Reclamação (Nº de Caracteres)")
+                plt.ylabel("Dias para Resolução")
+                plt.grid(True, linestyle='--', alpha=0.5)
+                
+                # Chamada correta (sem o parâmetro fig)
+                _configurar_e_salvar("Correlação: Complexidade do Texto vs Tempo de Resolução", pdf)
 
 
         logger.info("Finalizada a geração dos gráficos de insights.")
