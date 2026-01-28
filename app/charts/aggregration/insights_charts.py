@@ -1,8 +1,17 @@
-from charts.aggregration import plot_agregacao
-# Note: Você precisará importar os resultados de core.insights assim que os definir
-# from core.insights import resultados_insights 
 from utils import logger
 import matplotlib.pyplot as plt
+# Importa o dataframe processado do core/insights.py
+from core.insights import df_insights as df
+
+def _configurar_e_salvar(titulo, pdf):
+    """
+    Função auxiliar para aplicar título, ajustar layout e salvar no PDF.
+    """
+    plt.title(titulo)
+    plt.tight_layout()
+    if pdf:
+        pdf.savefig()
+    plt.close()
 
 def gerar_graficos_insights(pdf=None):
     """
@@ -10,18 +19,40 @@ def gerar_graficos_insights(pdf=None):
     """
     logger.info("Iniciando geração de gráficos de insights.")
 
+    # Verifica se o dataframe não está vazio para evitar erros de plotagem
+    if df.empty:
+        logger.warning("DataFrame de insights está vazio. Pulando geração de gráficos.")
+        return
+
     try:
-        # Exemplo de estrutura para um novo gráfico
-        # plt.figure(figsize=(12, 8))
-        # logger.debug("Gerando gráfico: Exemplo de Insight")
-        # plot_agregacao(
-        #     resultados_insights["exemplo"], 
-        #     titulo="Exemplo de Insight", 
-        #     show=False
-        # )
-        # if pdf:
-        #     pdf.savefig()
-        # plt.close()
+        # 1. Histograma tempo médio de resolução
+        logger.info("Gerando gráfico: Distribuição do Tempo de Resolução")
+        plt.figure(figsize=(12, 8))
+        
+        # Filtra valores nulos apenas por segurança antes de plotar
+        dados_resolucao = df["tempo_resolucao"].dropna()
+        
+        plt.hist(dados_resolucao, bins=20, color='skyblue', edgecolor='black')
+        
+        media = dados_resolucao.mean()
+        plt.axvline(media, color='red', linestyle='dashed', label=f'Média: {media:.2f} dias')
+        
+        plt.xlabel("Dias para Resolução")
+        plt.ylabel("Quantidade de Protocolos")
+        plt.legend()
+        _configurar_e_salvar("Tempo médio de resolução (Distribuição)", pdf)
+
+
+        # 2. Boxplot Geral (Outliers)
+        logger.info("Gerando gráfico: Análise de Outliers de Tempo")
+        plt.figure(figsize=(12, 8))
+        
+        plt.boxplot(dados_resolucao, vert=False, patch_artist=True, 
+                    boxprops=dict(facecolor='lightgreen'))
+        
+        plt.xlabel("Dias para Resolução")
+        _configurar_e_salvar("Tempo médio de resolução (Análise de Outliers)", pdf)
+
 
         logger.info("Finalizada a geração dos gráficos de insights.")
 

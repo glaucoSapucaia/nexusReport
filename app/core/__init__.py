@@ -7,7 +7,7 @@ from .protocolos import (
 )
 from .rotas import resultados as resultados_rotas
 from .pontos_visitados import resultados as resultados_pontos_visitados
-from .insights import resultados_insights
+from .insights import resultados_insights, df_insights
 
 __all__ = [
     "resultados_protocolos",
@@ -18,4 +18,5 @@ __all__ = [
     "resultados_tempestivo_intempestivo",
     "resultado_reclamacao",
     "texto_total",
+    "df_insights",
 ]
