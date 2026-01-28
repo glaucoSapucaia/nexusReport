@@ -113,6 +113,28 @@ def gerar_graficos_insights(pdf=None):
             
             _configurar_e_salvar("Tempo de Resolução por Tipo", pdf)
 
+            # 6. Mapa Geográfico (Scatter Plot)
+            logger.info("Gerando gráfico: Concentração Geográfica")
+            df_geo = df.dropna(subset=['latitude', 'longitude']).copy()
+        
+            if not df_geo.empty:
+                plt.figure(figsize=(12, 8))
+            
+                # Criando o gráfico de dispersão
+                plt.scatter(
+                df_geo['longitude'], 
+                df_geo['latitude'], 
+                alpha=0.4, 
+                c='blue',
+                edgecolors='w'
+            )
+            
+            plt.xlabel("Longitude")
+            plt.ylabel("Latitude")
+            plt.grid(True, linestyle='--', alpha=0.6)
+            
+            # Chamada da função auxiliar (sem o parâmetro fig)
+            _configurar_e_salvar("Concentração Geográfica de Protocolos", pdf)
 
 
 
