@@ -1,4 +1,5 @@
 from utils import logger
+import pandas as pd
 import matplotlib.pyplot as plt
 # Importa o dataframe processado do core/insights.py
 from core.insights import df_insights as df
@@ -54,7 +55,7 @@ def gerar_graficos_insights(pdf=None):
         plt.xlabel("Dias para Resolução")
         _configurar_e_salvar("Tempo médio de resolução (Análise de Outliers)", pdf)
 
-    # 3. Prioridade vs Tempo 
+        # 3. Prioridade vs Tempo 
         if 'prioridade' in df.columns:
             df_prio = df.dropna(subset=['prioridade', 'tempo_resolucao'])
             if not df_prio.empty:
@@ -76,6 +77,17 @@ def gerar_graficos_insights(pdf=None):
                 
                 # Chamada da função auxiliar
                 _configurar_e_salvar("Prioridade Declarada vs Tempo Real", pdf)
+
+        # 4. Volume ao Longo do Tempo
+        logger.info("Gerando gráfico: Volume de Protocolos ao Longo do Tempo")
+        df_tempo = df.copy()
+        df_tempo["data_ref"] = pd.to_datetime(df_tempo[["data_cadastro_sigede", "data_cadastro_gerencia"]].min(axis=1)).dt.date
+        contagem = df_tempo.groupby("data_ref").size()
+        plt.figure(figsize=(12, 8))
+        plt.plot(contagem.index, contagem.values, marker='o', color='#2E8B57')
+        plt.xticks(rotation=45)
+        _configurar_e_salvar("Volume de Protocolos ao Longo do Tempo", pdf)
+
 
 
 
