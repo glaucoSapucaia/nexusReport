@@ -56,8 +56,8 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
 
         mes = dt_inicio.strftime("%B")
         ano = dt_inicio.strftime("%Y")
-        # RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_{mes}_de_{ano}.pdf"
-        RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_todos_os_dados.pdf"
+        RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_{mes}_de_{ano}.pdf"
+        # RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_todos_os_dados.pdf"
 
         with PdfPages(RELATORIO_FILENAME) as pdf:
             logger.debug("Criando página de título.")
@@ -76,8 +76,8 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
             plt.text(
                 0.5,
                 0.4,
-                # f"{mes} de {ano}",
-                f"Todos os dados",
+                f"{mes} de {ano}",
+                # f"Todos os dados",
                 ha="center",
                 va="center",
                 fontsize=16,

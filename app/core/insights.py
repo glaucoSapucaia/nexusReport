@@ -7,10 +7,11 @@ logger.info("Iniciando pipeline de insights.")
 try:
     analisador = DBAnalyzer()
     dfs = analisador.carregar_tabelas(["protocolos_gmcat_tb"])
-    df_insights = dfs["protocolos_gmcat_tb"].copy()
 
     coluna_inicio = 'data_cadastro_sigede'
     coluna_fim = 'data_resolucao' 
+
+    df_insights = analisador.filtrar_periodo("protocolos_gmcat_tb", coluna_inicio)
 
     if coluna_fim in df_insights.columns:
         df_insights[coluna_inicio] = pd.to_datetime(df_insights[coluna_inicio]).dt.tz_localize(None)
