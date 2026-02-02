@@ -1,4 +1,5 @@
 import pandas as pd
+import plotly.express as px
 from .analyzer import DBAnalyzer
 from utils import logger
 
@@ -19,9 +20,32 @@ try:
         df_insights["tempo_resolucao"] = (df_insights[coluna_fim] - df_insights[coluna_inicio]).dt.days
         df_insights = df_insights.dropna(subset=["tempo_resolucao"])
         df_insights['tamanho_reclamacao'] = df_insights['reclamacao'].str.len().fillna(0)
+        if not df_insights.empty:
+    # 1. Preparar os dados para o mapa (remover coordenadas vazias)
+            df_mapa = df_insights.dropna(subset=['latitude', 'longitude'])
+
+    # 2. Criar o Mapa de Dispersão
+            fig_dispersao = px.scatter_mapbox(
+                df_mapa, lat="latitude", lon="longitude",
+                hover_name="tipo", color="regional",
+                zoom=10, center={"lat": -19.9167, "lon": -43.9333},
+                mapbox_style="carto-positron", title="Dispersão de Protocolos"
+            )
+
+    # 3. Criar o Mapa de Calor
+            fig_calor = px.density_mapbox(
+                df_mapa, lat="latitude", lon="longitude",
+                radius=10, zoom=10, center={"lat": -19.9167, "lon": -43.9333},
+                mapbox_style="stamen-terrain", title="Concentração de Demandas"
+            )
+
+    # 4. Adicionar ao dicionário de resultados
+            resultados_insights = {
+                "df": df_insights,
+                "mapa_dispersao": fig_dispersao,
+                "mapa_calor": fig_calor
+            }
         
-        # Criamos o objeto que o seu __init__.py está tentando importar
-        resultados_insights = {"df": df_insights}
         
         logger.info(f"Pipeline de insights concluído. {len(df_insights)} registros processados.")
     else:

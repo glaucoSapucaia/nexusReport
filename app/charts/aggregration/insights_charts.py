@@ -1,6 +1,8 @@
 from utils import logger
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+import contextily as ctx
 # Importa o dataframe processado do core/insights.py
 from core.insights import df_insights as df
 
@@ -113,30 +115,77 @@ def gerar_graficos_insights(pdf=None):
             
             _configurar_e_salvar("Tempo de Resolução por Tipo", pdf)
 
-            # 6. Mapa Geográfico (Scatter Plot)
-            logger.info("Gerando gráfico: Concentração Geográfica")
-            df_geo = df.dropna(subset=['latitude', 'longitude']).copy()
-        
-            if not df_geo.empty:
-                plt.figure(figsize=(12, 8))
+        # 6. Distribuição Regional (Volume por Regional)
+        logger.info("Gerando gráfico: Distribuição por Regional (Barra)")
+        if 'regional' in df.columns:
+            plt.figure(figsize=(12, 8))
             
-                # Criando o gráfico de dispersão
-                plt.scatter(
-                df_geo['longitude'], 
-                df_geo['latitude'], 
-                alpha=0.4, 
-                c='blue',
-                edgecolors='w'
-            )
+            # Conta protocolos por regional e ordena do maior para o menor
+            dist_regional = df['regional'].value_counts().sort_values(ascending=True)
             
-            plt.xlabel("Longitude")
-            plt.ylabel("Latitude")
-            plt.grid(True, linestyle='--', alpha=0.6)
+            # Cores variadas para cada barra
+            cores = plt.cm.viridis(np.linspace(0, 1, len(dist_regional)))
             
-            # Chamada da função auxiliar (sem o parâmetro fig)
-            _configurar_e_salvar("Concentração Geográfica de Protocolos", pdf)
+            dist_regional.plot(kind='barh', color=cores, edgecolor='black', alpha=0.7)
+            
+            plt.title("Volume de Protocolos por Regional - Janeiro/2026", fontsize=14, fontweight='bold')
+            plt.xlabel("Quantidade de Protocolos")
+            plt.ylabel("Regional")
+            plt.grid(axis='x', linestyle='--', alpha=0.6)
+            
+            # Adiciona os números no final de cada barra
+            for i, v in enumerate(dist_regional):
+                plt.text(v + 0.5, i, str(v), color='black', va='center', fontweight='bold')
+            
+            _configurar_e_salvar("Distribuição por Regional (Volume)", pdf)
 
-            # 7. Pontuação (Prioridade vs Resolução)
+        # 6.1 Mapa de Dispersão com Contorno de BH (O MELHOR DOS DOIS MUNDOS)
+        logger.info("Gerando visualização de dispersão com contorno de BH")
+        df_geo = df.dropna(subset=['latitude', 'longitude']).copy()
+    
+        if not df_geo.empty:
+            fig, ax = plt.subplots(figsize=(14, 12)) # Tamanho um pouco maior
+            
+            # Plotamos os pontos com cores por regional, mas um pouco mais densos
+            regionais = sorted(df_geo['regional'].unique())
+            cores_mapa = plt.cm.get_cmap('tab10', len(regionais))
+            
+            for i, reg in enumerate(regionais):
+                mask = df_geo['regional'] == reg
+                ax.scatter(
+                    df_geo.loc[mask, 'longitude'], 
+                    df_geo.loc[mask, 'latitude'], 
+                    label=reg,
+                    alpha=0.6,    # Transparência para ver o fundo
+                    edgecolors='k', # Borda preta fina para cada ponto
+                    linewidth=0.5,
+                    s=80,         # Tamanho dos pontos
+                    color=cores_mapa(i)
+                )
+            
+            # --- O GRANDE SEGREDO: UM MAPA DE FUNDO LIMPO E FOCADO EM CONTORNOS ---
+            try:
+                # O 'DarkMatter' vai deixar o fundo grafite escuro, ideal para destacar os pontos
+                ctx.add_basemap(ax, crs='EPSG:4326', source=ctx.providers.CartoDB.DarkMatter)
+            except Exception as e:
+                logger.warning(f"Erro ao baixar mapa escuro: {e}")
+                ax.set_facecolor('#262626') # Fundo cinza escuro caso falhe a internet
+
+            # --- AJUSTE O FOCO PARA A CIDADE DE BH INTEIRA ---
+            # Estes limites pegam uma boa área de BH para dar contexto
+            ax.set_xlim(-44.05, -43.85) # Longitude
+            ax.set_ylim(-20.0, -19.8)   # Latitude
+
+            ax.set_axis_off() # Remove os eixos de coordenadas para ficar limpo
+            
+            # Legenda fora do mapa e sem borda para um visual clean
+            plt.legend(title="Regionais", loc='center left', bbox_to_anchor=(1, 0.5), frameon=False, fontsize=10)
+            
+            plt.title("Dispersão de Demandas por Regional em Belo Horizonte", 
+                      fontsize=15, fontweight='bold', pad=20)
+            
+            _configurar_e_salvar("Dispersão Geográfica por Regional", pdf)
+        # 7. Pontuação (Prioridade vs Resolução)
         logger.info("Gerando gráfico: Pontuação de Prioridade vs Resolução")
         # Removemos nulos para evitar que o gráfico fique em branco ou dê erro
         df_scores = df.dropna(subset=['pontuacao_prioridade', 'pontuacao_resolucao'])
