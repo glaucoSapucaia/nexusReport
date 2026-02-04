@@ -57,28 +57,44 @@ def gerar_graficos_insights(pdf=None):
         plt.xlabel("Dias para Resolução")
         _configurar_e_salvar("Tempo médio de resolução (Análise de Outliers)", pdf)
 
-        # 3. Prioridade vs Tempo 
+        # 3. Prioridade vs Tempo (AJUSTADO PARA CLAREZA)
         if 'prioridade' in df.columns:
+            # Filtramos apenas quem tem tempo calculado (processos concluídos)
             df_prio = df.dropna(subset=['prioridade', 'tempo_resolucao'])
+            
             if not df_prio.empty:
                 logger.info("Gerando gráfico: Prioridade vs Tempo Real")
                 
+                # Tamanho padrão igual às outras páginas
                 plt.figure(figsize=(12, 8))
-                ax = plt.gca() # Pega o eixo atual
+                ax = plt.gca() 
                 
+                # --- O PULO DO GATO ---
+                # showfliers=False: remove os pontos de erro que esticam o gráfico
+                # patch_artist=True: permite colorir as caixas
                 df_prio.boxplot(
                     column='tempo_resolucao', 
                     by='prioridade', 
                     vert=False, 
                     patch_artist=True, 
-                    ax=ax
+                    showfliers=False, 
+                    ax=ax,
+                    boxprops=dict(facecolor='#ffcc80', color='#e65100'), # Laranja suave
+                    medianprops=dict(color='red', linewidth=2)
                 )
                 
-                plt.xlabel("Dias para Resolução")
-                plt.ylabel("Prioridade")
+                # Título que explica o dado para o seu chefe
+                concluidos = len(df_prio)
+                total_mes = len(df)
+                plt.title(f"Eficiência por Prioridade - Janeiro/2026\n(Análise de {concluidos} de {total_mes} protocolos concluídos)", 
+                          fontsize=14, fontweight='bold')
                 
-                # Chamada da função auxiliar
-                _configurar_e_salvar("Prioridade Declarada vs Tempo Real", pdf)
+                plt.xlabel("Dias para Resolução (Excluindo casos atípicos)")
+                plt.ylabel("Prioridade Declarada")
+                plt.suptitle("") # Remove o título automático duplicado do Pandas
+                plt.grid(axis='x', linestyle='--', alpha=0.3)
+                
+                _configurar_e_salvar("Prioridade vs Tempo de Atendimento", pdf)
 
         # 4. Volume ao Longo do Tempo
         logger.info("Gerando gráfico: Volume de Protocolos ao Longo do Tempo")
