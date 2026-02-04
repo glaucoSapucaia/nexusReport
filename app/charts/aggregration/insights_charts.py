@@ -139,52 +139,64 @@ def gerar_graficos_insights(pdf=None):
             
             _configurar_e_salvar("Distribuição por Regional (Volume)", pdf)
 
-        # 6.1 Mapa de Dispersão com Contorno de BH (O MELHOR DOS DOIS MUNDOS)
-        logger.info("Gerando visualização de dispersão com contorno de BH")
-        df_geo = df.dropna(subset=['latitude', 'longitude']).copy()
+        # 6.1 Mapa de Dispersão - AJUSTE DE TAMANHO
+        logger.info("Gerando mapa...")
+        df_geo = df.dropna(subset=['latitude', 'longitude', 'tipo']).copy()
     
         if not df_geo.empty:
-            fig, ax = plt.subplots(figsize=(14, 12)) # Tamanho um pouco maior
+            # Isso garante que esta página tenha o mesmo tamanho das outras
+            fig, ax = plt.subplots(figsize=(12, 8)) 
             
-            # Plotamos os pontos com cores por regional, mas um pouco mais densos
-            regionais = sorted(df_geo['regional'].unique())
-            cores_mapa = plt.cm.get_cmap('tab10', len(regionais))
+            tipos = sorted(df_geo['tipo'].unique())
+            cores_mapa = plt.cm.get_cmap('tab10', len(tipos))
             
-            for i, reg in enumerate(regionais):
-                mask = df_geo['regional'] == reg
+            for i, tipo in enumerate(tipos):
+                mask = df_geo['tipo'] == tipo
                 ax.scatter(
                     df_geo.loc[mask, 'longitude'], 
                     df_geo.loc[mask, 'latitude'], 
-                    label=reg,
-                    alpha=0.6,    # Transparência para ver o fundo
-                    edgecolors='k', # Borda preta fina para cada ponto
-                    linewidth=0.5,
-                    s=80,         # Tamanho dos pontos
+                    label=tipo,
+                    alpha=0.8,      
+                    edgecolors='black', 
+                    linewidth=0.7,   
+                    s=70, # Diminuído levemente para o novo tamanho de página
                     color=cores_mapa(i)
                 )
             
-            # --- O GRANDE SEGREDO: UM MAPA DE FUNDO LIMPO E FOCADO EM CONTORNOS ---
+            # Fundo de contraste (OpenStreetMap)
             try:
-                # O 'DarkMatter' vai deixar o fundo grafite escuro, ideal para destacar os pontos
-                ctx.add_basemap(ax, crs='EPSG:4326', source=ctx.providers.CartoDB.DarkMatter)
-            except Exception as e:
-                logger.warning(f"Erro ao baixar mapa escuro: {e}")
-                ax.set_facecolor('#262626') # Fundo cinza escuro caso falhe a internet
+                ctx.add_basemap(ax, crs='EPSG:4326', source=ctx.providers.OpenStreetMap.Mapnik)
+            except:
+                ax.set_facecolor('white')
 
-            # --- AJUSTE O FOCO PARA A CIDADE DE BH INTEIRA ---
-            # Estes limites pegam uma boa área de BH para dar contexto
-            ax.set_xlim(-44.05, -43.85) # Longitude
-            ax.set_ylim(-20.0, -19.8)   # Latitude
+            # Enquadramento BH
+            ax.set_xlim(-44.10, -43.85) 
+            ax.set_ylim(-20.05, -19.75) 
+            ax.set_axis_off()
+            
+            # --- LEGENDA: Agora ajustada para caber no A4 sem empurrar a margem ---
+            plt.legend(
+                title="Tipos de Protocolo", 
+                loc='center left', 
+                bbox_to_anchor=(1.02, 0.5), # Posiciona logo à direita do gráfico
+                frameon=True, 
+                shadow=True, 
+                fontsize=11,          
+                title_fontsize=13,    
+                markerscale=1.3,      
+                borderpad=1.2,        
+                labelspacing=1.0      
+            )
+            
+            plt.title("Distribuição por Tipo - Belo Horizonte (Jan/2026)", 
+                      fontsize=16, fontweight='bold', color='black', pad=20)
+            
+            fig.patch.set_facecolor('white')
+            
+            plt.tight_layout(rect=[0, 0, 0.85, 1]) 
+            
+            _configurar_e_salvar("Mapa de Demandas por Tipo", pdf)
 
-            ax.set_axis_off() # Remove os eixos de coordenadas para ficar limpo
-            
-            # Legenda fora do mapa e sem borda para um visual clean
-            plt.legend(title="Regionais", loc='center left', bbox_to_anchor=(1, 0.5), frameon=False, fontsize=10)
-            
-            plt.title("Dispersão de Demandas por Regional em Belo Horizonte", 
-                      fontsize=15, fontweight='bold', pad=20)
-            
-            _configurar_e_salvar("Dispersão Geográfica por Regional", pdf)
         # 7. Pontuação (Prioridade vs Resolução)
         logger.info("Gerando gráfico: Pontuação de Prioridade vs Resolução")
         # Removemos nulos para evitar que o gráfico fique em branco ou dê erro
