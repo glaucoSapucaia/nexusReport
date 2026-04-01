@@ -1,3 +1,4 @@
+# fmt: off
 from charts.aggregration import (
     gerar_graficos_protocolos,
     gerar_graficos_rotas,
@@ -42,7 +43,7 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
 
     try:
         # Define a localidade para pt_BR
-        locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
+        locale.setlocale(locale.LC_TIME, "Portuguese_Brazil.1252")
 
         # Normaliza data_inicio
         if isinstance(data_inicio, str):
