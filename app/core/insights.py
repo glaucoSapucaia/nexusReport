@@ -35,14 +35,11 @@ try:
     if not df_insights.empty:
         # --- LÓGICA DE RECUPERAÇÃO DE REGIONAL ---
         
-        # 1. Padroniza para maiúsculo para evitar "Barreiro" vs "BARREIRO"
         df_insights['regional'] = df_insights['regional'].astype(str).str.upper().str.strip()
 
-        # 2. Identifica onde a regional está faltando ou é inválida
         termos_vazios = ['NAN', 'NONE', 'SEM REGIONAL', '0', '', 'N/A']
         mask_invalida = df_insights['regional'].isin(termos_vazios)
 
-        # 3. Tenta preencher APENAS onde está inválido usando a função de GPS
         logger.info(f"Analisando {mask_invalida.sum()} registros sem regional definida...")
         
         df_insights.loc[mask_invalida, 'regional'] = df_insights[mask_invalida].apply(
@@ -50,7 +47,7 @@ try:
             axis=1
         )
 
-        # 4. Limpeza final: o que continuou inválido vira "SEM REGIONAL" padronizado
+        
         df_insights.loc[df_insights['regional'].isin(termos_vazios), 'regional'] = 'SEM REGIONAL'
 
     if coluna_fim in df_insights.columns:
