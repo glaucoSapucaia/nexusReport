@@ -1,7 +1,7 @@
 from utils import logger
 
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+from matplotlib import colormaps
 import numpy as np
 
 
@@ -31,7 +31,7 @@ def plot_agregacao(
 
         if tipo == "bar":
             if horizontal:
-                cores = cm.tab20(np.linspace(0, 1, len(dados)))
+                cores = colormaps["tab20"](np.linspace(0.0, 1.0, num=len(dados)))
                 ax = dados.plot(kind="barh", color=cores)
                 plt.xlabel("Contagem")
                 plt.ylabel("")
@@ -51,7 +51,7 @@ def plot_agregacao(
                             v + max(dados) * 0.01, i, str(v), color="black", va="center"
                         )
             else:
-                cores = cm.tab20(np.linspace(0, 1, len(dados)))
+                cores = colormaps["tab20"](np.linspace(0.0, 1.0, num=len(dados)))
                 ax = dados.plot(kind="bar", color=cores)
                 plt.ylabel("Contagem")
                 plt.xlabel("")
