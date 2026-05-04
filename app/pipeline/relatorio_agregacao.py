@@ -14,7 +14,6 @@ from datetime import datetime
 import locale
 from matplotlib import rcParams
 
-
 rcParams.update({"font.size": 12, "figure.titlesize": 16})
 
 
@@ -42,7 +41,7 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
 
     try:
         # Define a localidade para pt_BR
-        locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
+        locale.setlocale(locale.LC_TIME, "Portuguese_Brazil.1252")
 
         # Normaliza data_inicio
         if isinstance(data_inicio, str):
@@ -56,6 +55,7 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
 
         mes = dt_inicio.strftime("%B")
         ano = dt_inicio.strftime("%Y")
+
         RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_{mes}_de_{ano}.pdf"
         # RELATORIO_FILENAME = f"Relatorio_GMCAT_Nexuscore_todos_os_dados.pdf"
 
@@ -132,7 +132,9 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
             logger.info("Gerando seção: Insights")
             plt.figure(figsize=(12, 2))
             plt.axis("off")
-            plt.text(0, 0.5, "4. Insights", fontsize=16, fontweight="bold") # Título da seção
+            plt.text(
+                0, 0.5, "4. Insights", fontsize=16, fontweight="bold"
+            )  # Título da seção
             pdf.savefig()
             plt.close()
             gerar_graficos_insights(pdf=pdf)

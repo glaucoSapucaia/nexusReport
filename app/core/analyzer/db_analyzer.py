@@ -7,8 +7,8 @@ from pathlib import Path
 
 ENV_DIR = Path(__file__).resolve().parent.parent.parent.parent / ".env"
 
-data_inicio = "2026-03-01"
-data_fim = "2026-03-31"
+data_inicio = "2026-04-01"
+data_fim = "2026-04-30"
 
 
 class DBAnalyzer:
