@@ -2,7 +2,7 @@ from charts.aggregration import (
     gerar_graficos_protocolos,
     gerar_graficos_rotas,
     gerar_graficos_vistoriados,
-    gerar_graficos_insights,
+    # gerar_graficos_insights,
 )
 from charts.word_cloud import gerar_word_cloud
 from core.analyzer import data_inicio
@@ -93,7 +93,7 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
             plt.text(0, 0.6, "1. Protocolos", fontsize=16)
             plt.text(0, 0.5, "2. Rotas", fontsize=16)
             plt.text(0, 0.4, "3. Vistorias", fontsize=16)
-            plt.text(0, 0.3, "4. Insights", fontsize=16)
+            # plt.text(0, 0.3, "4. Insights", fontsize=16)
             pdf.savefig()
             plt.close()
 
@@ -129,15 +129,15 @@ def gerar_relatorio_agregacao(data_inicio=data_inicio):
             gerar_graficos_vistoriados(pdf=pdf)
 
             # Insights
-            logger.info("Gerando seção: Insights")
-            plt.figure(figsize=(12, 2))
-            plt.axis("off")
-            plt.text(
-                0, 0.5, "4. Insights", fontsize=16, fontweight="bold"
-            )  # Título da seção
-            pdf.savefig()
-            plt.close()
-            gerar_graficos_insights(pdf=pdf)
+            # logger.info("Gerando seção: Insights")
+            # plt.figure(figsize=(12, 2))
+            # plt.axis("off")
+            # plt.text(
+            #     0, 0.5, "4. Insights", fontsize=16, fontweight="bold"
+            # )
+            # pdf.savefig()
+            # plt.close()
+            # gerar_graficos_insights(pdf=pdf)
 
             # Página final
             logger.debug("Criando página final com data e hora.")
